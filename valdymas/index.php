@@ -16,8 +16,13 @@ if (isset($_POST['reset'])) {
     exit;
 }
 
-$stmt = $pdo->query("SELECT stage, visited_at FROM hunt_progress");
-$db_data = $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
+// GAUNAME PROGRESĄ, GRUPUOTĄ PAGAL VARDUS
+$all_progress = $pdo->query("SELECT player_name, stage, visited_at FROM hunt_progress ORDER BY player_name, stage ASC")->fetchAll();
+
+$players = [];
+foreach ($all_progress as $row) {
+    $players[$row['player_name']][$row['stage']] = $row['visited_at'];
+}
 
 $contents = $pdo->query("SELECT * FROM hunt_content ORDER BY stage ASC")->fetchAll();
 ?>
@@ -46,8 +51,10 @@ $contents = $pdo->query("SELECT * FROM hunt_content ORDER BY stage ASC")->fetchA
         
         h2 { margin-top: 0; font-size: 1.25rem; font-weight: 600; margin-bottom: 20px; color: #fff; }
         
-        /* Radaras */
-        .item { padding: 16px; margin-bottom: 12px; border-radius: var(--radius-sm); background: var(--bg-item); display: flex; justify-content: space-between; align-items: center; font-weight: 500;}
+        /* Radaras - Grupuotas */
+        .player-group { background: rgba(0,0,0,0.2); border-radius: var(--radius-sm); padding: 15px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.05);}
+        .player-name { font-size: 1rem; color: var(--accent); margin: 0 0 12px 0; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;}
+        .item { padding: 14px; margin-bottom: 8px; border-radius: var(--radius-sm); background: var(--bg-item); display: flex; justify-content: space-between; align-items: center; font-weight: 500; font-size: 0.9rem;}
         .done { border-left: 4px solid var(--success); background: rgba(16, 185, 129, 0.1); color: #fff; }
         
         /* Redaktorius */
@@ -107,12 +114,21 @@ $contents = $pdo->query("SELECT * FROM hunt_content ORDER BY stage ASC")->fetchA
         <div class="panel">
             <h2>Sekimo radaras</h2>
             <div id="radar">
-                <?php for ($i = 1; $i <= 7; $i++): ?>
-                    <div class="item <?php echo isset($db_data[$i]) ? 'done' : ''; ?>">
-                        <span>Stotelė <?php echo $i; ?></span>
-                        <span><?php echo isset($db_data[$i]) ? date("H:i:s", strtotime($db_data[$i])) : '⏳ Laukiama'; ?></span>
-                    </div>
-                <?php endfor; ?>
+                <?php if (empty($players)): ?>
+                    <p style="color:var(--text-muted); text-align:center;">Dar nėra jokių žaidėjų.</p>
+                <?php else: ?>
+                    <?php foreach ($players as $name => $stages): ?>
+                        <div class="player-group">
+                            <h3 class="player-name">👤 <?php echo htmlspecialchars($name); ?></h3>
+                            <?php for ($i = 1; $i <= 7; $i++): ?>
+                                <div class="item <?php echo isset($stages[$i]) ? 'done' : ''; ?>">
+                                    <span>Stotelė <?php echo $i; ?></span>
+                                    <span><?php echo isset($stages[$i]) ? date("H:i:s", strtotime($stages[$i])) : '⏳ Laukiama'; ?></span>
+                                </div>
+                            <?php endfor; ?>
+                        </div>
+                    <?php endforeach; ?>
+                <?php endif; ?>
             </div>
             <form method="post" onsubmit="return confirm('Ar tikrai ištrinti vizitų istoriją?');">
                 <button type="submit" name="reset" class="btn btn-red">Išvalyti istoriją</button>
@@ -121,6 +137,9 @@ $contents = $pdo->query("SELECT * FROM hunt_content ORDER BY stage ASC")->fetchA
 
         <div class="panel" style="flex-basis: 420px;">
             <h2>Turinio redaktorius</h2>
+            <p style="font-size:0.85rem; color:var(--text-muted); margin-top:-15px; margin-bottom:20px;">
+                Naudokite tekstą <b>{vardas}</b> ir jis automatiškai pasikeis į žaidėjo vardą!
+            </p>
             <?php if(isset($msg)) echo "<div class='msg'>$msg</div>"; ?>
             
             <?php foreach ($contents as $c): ?>
