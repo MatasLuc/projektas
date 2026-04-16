@@ -26,7 +26,7 @@ foreach ($all_progress as $row) {
 
 $contents = $pdo->query("SELECT * FROM hunt_content ORDER BY stage ASC")->fetchAll();
 
-// Susikuriame žemėlapių nuorodų masyvą, kad galėtume priskirti žaidėjui
+// Susikuriame žemėlapių kodų masyvą
 $stage_maps = [];
 foreach ($contents as $c) {
     $stage_maps[$c['stage']] = $c['maps_url'];
@@ -59,13 +59,15 @@ foreach ($contents as $c) {
         
         /* Radaras - Grupuotas */
         .player-group { background: rgba(0,0,0,0.2); border-radius: var(--radius-sm); padding: 15px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.05);}
-        .player-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        .player-name { font-size: 1rem; color: var(--accent); margin: 0; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;}
+        .player-header { margin-bottom: 12px; }
+        .player-name { font-size: 1rem; color: var(--accent); margin: 0 0 10px 0; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;}
         .item { padding: 14px; margin-bottom: 8px; border-radius: var(--radius-sm); background: var(--bg-item); display: flex; justify-content: space-between; align-items: center; font-weight: 500; font-size: 0.9rem;}
         .done { border-left: 4px solid var(--success); background: rgba(16, 185, 129, 0.1); color: #fff; }
         
-        /* Naujas mygtukas žemėlapiui */
-        .btn-map { background: rgba(59, 130, 246, 0.1); color: var(--accent); padding: 6px 12px; border-radius: 20px; text-decoration: none; font-size: 0.8rem; font-weight: bold; border: 1px solid rgba(59, 130, 246, 0.3); transition: 0.2s; }
+        /* Įterptas žemėlapis */
+        .player-map { margin-bottom: 12px; overflow: hidden; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); }
+        .player-map iframe { width: 100% !important; height: 220px !important; display: block; border: none; }
+        .btn-map { display: inline-block; background: rgba(59, 130, 246, 0.1); color: var(--accent); padding: 6px 12px; border-radius: 20px; text-decoration: none; font-size: 0.8rem; font-weight: bold; border: 1px solid rgba(59, 130, 246, 0.3); transition: 0.2s; margin-bottom: 12px;}
         .btn-map:hover { background: var(--accent); color: #fff; }
 
         /* Redaktorius */
@@ -129,17 +131,27 @@ foreach ($contents as $c) {
                     <p style="color:var(--text-muted); text-align:center;">Dar nėra jokių žaidėjų.</p>
                 <?php else: ?>
                     <?php foreach ($players as $name => $stages): 
-                        // Apskaičiuojame, kur žaidėjas yra dabar (didžiausias lankytos stotelės skaičius)
                         $latest_stage = max(array_keys($stages));
-                        $latest_map_url = isset($stage_maps[$latest_stage]) ? $stage_maps[$latest_stage] : '';
+                        $latest_map_url = isset($stage_maps[$latest_stage]) ? trim($stage_maps[$latest_stage]) : '';
                     ?>
                         <div class="player-group">
                             <div class="player-header">
-                                <h3 class="player-name">👤 <?php echo htmlspecialchars($name); ?></h3>
+                                <h3 class="player-name">👤 <?php echo htmlspecialchars($name); ?> (Stotelė #<?php echo $latest_stage; ?>)</h3>
+                                
                                 <?php if (!empty($latest_map_url)): ?>
-                                    <a href="<?php echo htmlspecialchars($latest_map_url); ?>" target="_blank" class="btn-map">🗺️ Stotelė #<?php echo $latest_stage; ?></a>
+                                    <?php 
+                                    // Tikriname, ar įvestas kodas prasideda " <iframe "
+                                    if (strpos($latest_map_url, '<iframe') !== false): 
+                                    ?>
+                                        <div class="player-map">
+                                            <?php echo $latest_map_url; // Išvedame patį iframe ?>
+                                        </div>
+                                    <?php else: ?>
+                                        <a href="<?php echo htmlspecialchars($latest_map_url); ?>" target="_blank" class="btn-map">🗺️ Atidaryti žemėlapį</a>
+                                    <?php endif; ?>
                                 <?php endif; ?>
                             </div>
+
                             <?php for ($i = 1; $i <= 7; $i++): ?>
                                 <div class="item <?php echo isset($stages[$i]) ? 'done' : ''; ?>">
                                     <span>Stotelė <?php echo $i; ?></span>
@@ -158,7 +170,7 @@ foreach ($contents as $c) {
         <div class="panel" style="flex-basis: 420px;">
             <h2>Turinio redaktorius</h2>
             <p style="font-size:0.85rem; color:var(--text-muted); margin-top:-15px; margin-bottom:20px;">
-                Naudokite tekstą <b>{vardas}</b> ir jis automatiškai pasikeis į žaidėjo vardą!
+                Naudokite tekstą <b>{vardas}</b> ir jis automatiškai pasikeis į žaidėjo vardą! Į laukelį <b>Google Maps Embed</b> galite įklijuoti visą <code>&lt;iframe&gt;</code> kodą.
             </p>
             <?php if(isset($msg)) echo "<div class='msg'>$msg</div>"; ?>
             
@@ -177,8 +189,8 @@ foreach ($contents as $c) {
                         <label>Užuomina toliau</label>
                         <textarea name="clue" rows="2"><?php echo htmlspecialchars($c['clue']); ?></textarea>
                         
-                        <label>Google Maps nuoroda</label>
-                        <input type="url" name="maps_url" value="<?php echo htmlspecialchars($c['maps_url']); ?>" placeholder="https://goo.gl/maps/...">
+                        <label>Google Maps Embed (nuoroda arba iframe)</label>
+                        <textarea name="maps_url" rows="3" placeholder='<iframe src="https://www.google.com/maps/embed?..." ...></iframe>'><?php echo htmlspecialchars($c['maps_url']); ?></textarea>
                         
                         <button type="submit" name="save_content" class="btn btn-green">Išsaugoti pakeitimus</button>
                     </form>
