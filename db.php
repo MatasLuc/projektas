@@ -23,8 +23,16 @@ try {
         title VARCHAR(255),
         description TEXT,
         clue TEXT,
-        maps_url TEXT
+        maps_url TEXT,
+        secret_symbol VARCHAR(255)
     )");
+
+    // Saugiklis: jei lentelė jau buvo sukurta anksčiau, pridedame naują stulpelį slapto simbolio saugojimui
+    try {
+        $pdo->exec("ALTER TABLE hunt_content ADD COLUMN secret_symbol VARCHAR(255) DEFAULT ''");
+    } catch (PDOException $e) {
+        // Ignoruojame, jei stulpelis jau egzistuoja
+    }
 
     // Jei lentelė tuščia, sukuriame 7 tuščius įrašus, kad turėtume ką redaguoti
     $check = $pdo->query("SELECT COUNT(*) FROM hunt_content")->fetchColumn();
