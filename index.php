@@ -77,6 +77,10 @@ $desc_text = str_replace('{vardas}', $player_name, $data['description']);
 $clue_text = str_replace('{vardas}', $player_name, $data['clue']);
 
 $progress_percent = ($step / $total_steps) * 100;
+
+// Patikriname ar įvestas iframe ar paprasta nuoroda
+$maps_code = isset($data['maps_url']) ? trim($data['maps_url']) : '';
+$is_iframe = (strpos($maps_code, '<iframe') !== false);
 ?>
 <!DOCTYPE html>
 <html lang="lt">
@@ -98,14 +102,13 @@ $progress_percent = ($step / $total_steps) * 100;
         }
 
         body { 
-            margin: 0; padding: 0 20px 100px 20px; /* Padding apačioje meniu juostai */
+            margin: 0; padding: 0 20px 100px 20px; 
             min-height: 100vh; 
             display: flex; flex-direction: column; align-items: center; justify-content: center; 
             box-sizing: border-box; -webkit-font-smoothing: antialiased;
             background: var(--bg-game); color: #f8fafc; font-family: 'Inter', sans-serif;
         }
         
-        /* Progresijos juosta (Viršuje) */
         .top-bar {
             position: absolute; top: 0; left: 0; width: 100%; padding: 20px;
             box-sizing: border-box; text-align: center;
@@ -128,14 +131,15 @@ $progress_percent = ($step / $total_steps) * 100;
         
         .clue-box { background: rgba(0, 0, 0, 0.2); padding: 25px 20px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.05); }
         .clue-text { font-weight: 600; color: #fff; font-size: 1.15rem; line-height: 1.5; }
+        
         .btn-help { 
             display: inline-block; margin-top: 20px; padding: 12px 24px; 
             background: transparent; color: #cbd5e1; text-decoration: none; border-radius: 30px; font-size: 0.95rem; font-weight: 600;
-            border: 1px solid #475569; transition: all 0.2s ease;
+            border: 1px solid #475569; transition: all 0.2s ease; cursor: pointer;
         }
         .btn-help:active { background: #475569; color: #fff; }
 
-        /* Apatinis Navigacijos Meniu */
+        /* Meniu */
         .bottom-nav {
             position: fixed; bottom: 0; left: 0; width: 100%; background: var(--nav-bg);
             backdrop-filter: blur(10px); display: flex; justify-content: space-around; padding: 12px 0;
@@ -145,7 +149,7 @@ $progress_percent = ($step / $total_steps) * 100;
         .nav-item span.icon { font-size: 1.4rem; margin-bottom: 4px; }
         .nav-item.active { color: var(--accent); }
 
-        /* Modalų Stiliai (DUK ir Kontaktai) */
+        /* Modalai */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.6); backdrop-filter: blur(5px);
@@ -163,7 +167,6 @@ $progress_percent = ($step / $total_steps) * 100;
         .modal-title { font-size: 1.3rem; color: var(--accent); margin-top: 0; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;}
         
         .faq-item { margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 15px;}
-        .faq-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0;}
         .faq-q { font-weight: 600; margin-bottom: 8px; color: #e2e8f0; font-size: 1.05rem;}
         .faq-a { color: #94a3b8; font-size: 0.95rem; line-height: 1.5; margin: 0;}
         
@@ -171,7 +174,11 @@ $progress_percent = ($step / $total_steps) * 100;
         .phone-number { font-size: 1.5rem; color: #10b981; font-weight: 700; margin: 10px 0; text-decoration: none; display: block;}
         .btn-call { display: block; background: #10b981; color: white; padding: 12px; border-radius: 12px; text-decoration: none; font-weight: 600; font-size: 1.1rem; }
 
-        /* Finalo režimo perrašymai */
+        /* Žemėlapio atvaizdavimo konteineris iššokančiame lange */
+        .map-container { background: #0f172a; border-radius: 12px; overflow: hidden; margin-top: 10px; border: 1px solid rgba(255,255,255,0.05); }
+        .map-container iframe { width: 100% !important; height: 350px !important; border: none; display: block; }
+
+        /* Finale rėžimas */
         body.finale-mode { background: var(--bg-finale); color: #1c1917; }
         .finale-mode .top-bar .progress-text { color: #57534e; }
         .finale-mode .progress-bg { background: rgba(0,0,0,0.1); }
@@ -181,8 +188,6 @@ $progress_percent = ($step / $total_steps) * 100;
         .finale-mode p { font-family: 'Playfair Display', serif; font-style: italic; font-size: 1.25rem; color: #57534e; }
         .finale-mode .clue-box { padding: 0; background: transparent; border: none; }
         .finale-mode .clue-text { font-family: 'Inter', sans-serif; font-weight: 400; color: #292524; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 2px; }
-        
-        /* Modalo fonas finale lieka tamsus, kad gražiai kontrastuotų */
     </style>
 </head>
 <body class="<?php echo $is_finale ? 'finale-mode' : 'game-mode'; ?>">
@@ -200,8 +205,13 @@ $progress_percent = ($step / $total_steps) * 100;
         
         <div class="clue-box">
             <div class="clue-text"><?php echo nl2br(htmlspecialchars($clue_text)); ?></div>
-            <?php if (!$is_finale && !empty($data['maps_url'])): ?>
-                <a href="<?php echo htmlspecialchars($data['maps_url']); ?>" class="btn-help" onclick="return confirm('Rodyti tikslią vietą žemėlapyje?');">Nerandu vietos... 📍</a>
+            
+            <?php if (!$is_finale && !empty($maps_code)): ?>
+                <?php if ($is_iframe): ?>
+                    <button type="button" class="btn-help" onclick="openModal('mapModal')">Nerandu vietos... 📍</button>
+                <?php else: ?>
+                    <a href="<?php echo htmlspecialchars($maps_code); ?>" target="_blank" class="btn-help" onclick="return confirm('Rodyti tikslią vietą žemėlapyje?');">Nerandu vietos... 📍</a>
+                <?php endif; ?>
             <?php endif; ?>
         </div>
     </div>
@@ -225,7 +235,6 @@ $progress_percent = ($step / $total_steps) * 100;
         <div class="modal-card">
             <button class="modal-close" onclick="closeAllModals()">✕</button>
             <h2 class="modal-title">💡 Dažniausi klausimai</h2>
-            
             <div class="faq-item">
                 <div class="faq-q">📍 Kaip rasti sekančią vietą?</div>
                 <div class="faq-a">Perskaityk užuominą juodame laukelyje. Nukeliavus į nurodytą vietą, rasi kitą paslėptą QR kodą.</div>
@@ -245,11 +254,7 @@ $progress_percent = ($step / $total_steps) * 100;
         <div class="modal-card">
             <button class="modal-close" onclick="closeAllModals()">✕</button>
             <h2 class="modal-title">📞 Pagalbos linija</h2>
-            
-            <p style="color: #cbd5e1; font-size: 0.95rem; margin-bottom: 20px;">
-                Jei visiškai užstrigai, nerandi kodo arba kažkas neveikia – skambink organizatoriui (Slaptajam Agentui).
-            </p>
-            
+            <p style="color: #cbd5e1; font-size: 0.95rem; margin-bottom: 20px;">Jei visiškai užstrigai, nerandi kodo arba kažkas neveikia – skambink organizatoriui.</p>
             <div class="contact-box">
                 <span style="font-size: 0.85rem; color: #94a3b8; text-transform: uppercase;">Tiesioginis numeris</span>
                 <a href="tel:+37060000000" class="phone-number">+370 600 00000</a> 
@@ -258,12 +263,24 @@ $progress_percent = ($step / $total_steps) * 100;
         </div>
     </div>
 
+    <?php if (!$is_finale && $is_iframe): ?>
+    <div class="modal-overlay" id="mapModal">
+        <div class="modal-card">
+            <button class="modal-close" onclick="closeAllModals()">✕</button>
+            <h2 class="modal-title">📍 Žemėlapis</h2>
+            <p style="color: #cbd5e1; font-size: 0.95rem; margin-bottom: 15px;">Tiksli vietos lokacija:</p>
+            <div class="map-container">
+                <?php echo $maps_code; ?>
+            </div>
+        </div>
+    </div>
+    <?php endif; ?>
+
     <script>
         function openModal(modalId) {
-            closeAllModals(); // Uždaro kitus prieš atidarant
+            closeAllModals(); 
             document.getElementById(modalId).classList.add('active');
             
-            // Atnaujina mygtukų spalvas
             document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
             if(modalId === 'faqModal') document.querySelectorAll('.nav-item')[1].classList.add('active');
             if(modalId === 'contactModal') document.querySelectorAll('.nav-item')[2].classList.add('active');
@@ -272,10 +289,9 @@ $progress_percent = ($step / $total_steps) * 100;
         function closeAllModals() {
             document.querySelectorAll('.modal-overlay').forEach(modal => modal.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
-            document.querySelectorAll('.nav-item')[0].classList.add('active'); // Grąžina aktyvumą pirmajam mygtukui
+            document.querySelectorAll('.nav-item')[0].classList.add('active'); 
         }
 
-        // Uždaro modalą paspaudus už jo ribų (ant tamsaus fono)
         document.querySelectorAll('.modal-overlay').forEach(overlay => {
             overlay.addEventListener('click', function(e) {
                 if(e.target === this) closeAllModals();
