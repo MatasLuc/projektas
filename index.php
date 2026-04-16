@@ -24,13 +24,30 @@ if (!isset($_SESSION['player_name']) || empty($_SESSION['player_name'])) {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-        <title>Pradėti iššūkį</title>
+        <title>Pradėti iššūkį - 7 Istorijos</title>
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
         <style>
             body { margin: 0; padding: 20px; min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #0f2027, #203a43, #2c5364); color: #f8fafc; font-family: 'Inter', sans-serif; box-sizing: border-box; -webkit-font-smoothing: antialiased;}
-            .card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); padding: 40px 30px; border-radius: 24px; text-align: center; width: 100%; max-width: 350px; animation: fadeInUp 0.8s ease forwards; box-sizing: border-box;}
+            
+            /* Naujas antraštės stilius */
+            .brand-header {
+                position: absolute;
+                top: 40px;
+                left: 0;
+                width: 100%;
+                text-align: center;
+                font-family: 'Playfair Display', serif;
+                font-size: 1.6rem;
+                color: #fbbf24;
+                font-weight: 600;
+                letter-spacing: 2px;
+                text-transform: uppercase;
+                animation: fadeInUp 0.8s ease forwards;
+            }
+
+            .card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); padding: 40px 30px; border-radius: 24px; text-align: center; width: 100%; max-width: 350px; animation: fadeInUp 0.8s ease forwards; box-sizing: border-box; margin-top: 40px;}
             @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
             h1 { color: #fbbf24; font-size: 1.5rem; margin-bottom: 10px; }
             p { color: #cbd5e1; font-size: 1rem; margin-bottom: 25px; line-height: 1.5;}
@@ -41,6 +58,8 @@ if (!isset($_SESSION['player_name']) || empty($_SESSION['player_name'])) {
         </style>
     </head>
     <body>
+        <div class="brand-header">7 istorijos. Žvėrynas</div>
+        
         <div class="card">
             <h1>Miesto Iššūkis</h1>
             <p>Sistemos inicializacija. Prašome identifikuoti save.</p>
@@ -110,9 +129,22 @@ $is_iframe = (strpos($maps_code, '<iframe') !== false);
         }
         
         .top-bar {
-            position: absolute; top: 0; left: 0; width: 100%; padding: 20px;
+            position: absolute; top: 0; left: 0; width: 100%; padding: 25px 20px 20px 20px;
             box-sizing: border-box; text-align: center;
         }
+
+        /* Pagrindinės antraštės stilius (Žaidime) */
+        .brand-header {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            color: var(--accent);
+            text-align: center;
+            margin-bottom: 15px;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
         .progress-text { font-size: 0.85rem; font-weight: 600; color: #cbd5e1; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;}
         .progress-bg { background: rgba(255,255,255,0.1); height: 6px; border-radius: 10px; width: 100%; max-width: 300px; margin: 0 auto; overflow: hidden; }
         .progress-fill { background: var(--accent); height: 100%; border-radius: 10px; transition: width 0.5s ease; }
@@ -122,7 +154,7 @@ $is_iframe = (strpos($maps_code, '<iframe') !== false);
             background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1);
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); 
             animation: fadeInUp 0.8s ease-out forwards; opacity: 0; transform: translateY(20px);
-            margin-top: 50px;
+            margin-top: 100px; /* Padidinta nuo 50px, kad tilptų headeris */
         }
         @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
 
@@ -180,6 +212,7 @@ $is_iframe = (strpos($maps_code, '<iframe') !== false);
 
         /* Finale rėžimas */
         body.finale-mode { background: var(--bg-finale); color: #1c1917; }
+        .finale-mode .brand-header { color: #8C5A40; } /* Headerio spalva finalo lange */
         .finale-mode .top-bar .progress-text { color: #57534e; }
         .finale-mode .progress-bg { background: rgba(0,0,0,0.1); }
         .finale-mode .progress-fill { background: #8C5A40; }
@@ -193,6 +226,7 @@ $is_iframe = (strpos($maps_code, '<iframe') !== false);
 <body class="<?php echo $is_finale ? 'finale-mode' : 'game-mode'; ?>">
 
     <div class="top-bar">
+        <div class="brand-header">7 istorijos. Žvėrynas</div>
         <div class="progress-text">Progresas: <?php echo $step; ?> / <?php echo $total_steps; ?></div>
         <div class="progress-bg">
             <div class="progress-fill" style="width: <?php echo $progress_percent; ?>%;"></div>
