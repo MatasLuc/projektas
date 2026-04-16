@@ -40,10 +40,14 @@ if (!isset($_SESSION['player_name']) || empty($_SESSION['player_name'])) {
         </style>
     </head>
     <body>
-        <div class="brand-header">7 istorijos.<br> Žvėrynas</div>
+        <div class="brand-header">7 istorijos. Žvėrynas</div>
         <div class="card">
-            <h1>Miesto Iššūkis</h1>
-            <p>Sistemos inicializacija. Prašome identifikuoti save.</p>
+            <h1>Žvėryno iššūkis</h1>
+            <p>Labas, <?php echo htmlspecialchars($player_name); ?>!</p>
+            <p>Džiaugiamės, kad pasirinkai vykdyti Žvėryno iššūkį!</p>
+            <p>Viskas yra labai paprasta - pasinaudodamas užuomenomis turi surasti 7 vietas, kuriose rasi QR kodus.</p>
+            <p>Jeigu kažkurioje iš užduočių užstrigsi - nieko baisaus! Vietą gali pasižiūrėti ir žemėlapyje</p>
+            <p>Tačiau tuo nepiktnaudžiauk - nuo to nukentės galutinis tavo rezultatas :(</p>
             <form method="post">
                 <input type="text" name="player_name" placeholder="Tavo vardas" required autocomplete="off">
                 <button type="submit" name="set_name">Pradėti 🚀</button>
