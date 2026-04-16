@@ -170,7 +170,7 @@ foreach ($contents as $c) {
         <div class="panel" style="flex-basis: 420px;">
             <h2>Turinio redaktorius</h2>
             <p style="font-size:0.85rem; color:var(--text-muted); margin-top:-15px; margin-bottom:20px;">
-                Naudokite tekstą <b>{vardas}</b> ir jis automatiškai pasikeis į žaidėjo vardą! Į laukelį <b>Google Maps Embed</b> galite įklijuoti visą <code>&lt;iframe&gt;</code> kodą.
+                Naudokite tekstą <b>{vardas}</b> ir jis automatiškai pasikeis į žaidėjo vardą! Į laukelį <b>Google Maps Embed</b> galite įklijuoti visą <code><iframe></code> kodą.
             </p>
             <?php if(isset($msg)) echo "<div class='msg'>$msg</div>"; ?>
             
