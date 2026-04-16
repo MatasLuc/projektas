@@ -31,8 +31,10 @@ if (!isset($_SESSION['player_name']) || empty($_SESSION['player_name'])) {
             .brand-header { position: absolute; top: 40px; left: 0; width: 100%; text-align: center; font-size: 1.4rem; color: var(--text); font-weight: 700; letter-spacing: 2px; text-transform: uppercase; animation: fadeInUp 0.8s ease forwards; }
             .card { background: var(--surface); border: 1px solid rgba(255, 255, 255, 0.05); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); padding: 40px 30px; border-radius: 16px; text-align: center; width: 100%; max-width: 350px; animation: fadeInUp 0.8s ease forwards; box-sizing: border-box; margin-top: 40px;}
             @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-            h1 { color: var(--accent); font-size: 1.5rem; margin-bottom: 10px; }
-            p { color: #a0a0a0; font-size: 1rem; margin-bottom: 25px; line-height: 1.5;}
+            h1 { color: var(--accent); font-size: 1.6rem; margin-bottom: 20px; }
+            .intro-text { color: #a0a0a0; font-size: 1rem; line-height: 1.6; margin-bottom: 30px; }
+            .intro-text p { margin: 0 0 12px 0; }
+            .intro-text p:last-child { margin: 0; }
             input { width: 100%; padding: 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: #2a2a2a; color: white; font-size: 1.1rem; box-sizing: border-box; margin-bottom: 20px; text-align: center; outline: none; transition: 0.2s; }
             input:focus { border-color: var(--accent); }
             button { width: 100%; padding: 15px; background: var(--accent); color: #000; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: 0.2s; text-transform: uppercase; letter-spacing: 1px;}
@@ -43,11 +45,11 @@ if (!isset($_SESSION['player_name']) || empty($_SESSION['player_name'])) {
         <div class="brand-header">7 istorijos. Žvėrynas</div>
         <div class="card">
             <h1>Žvėryno iššūkis</h1>
-            <p>Labas, <?php echo htmlspecialchars($player_name); ?>!</p>
-            <p>Džiaugiamės, kad pasirinkai vykdyti Žvėryno iššūkį!</p>
-            <p>Viskas yra labai paprasta - pasinaudodamas užuomenomis turi surasti 7 vietas, kuriose rasi QR kodus.</p>
-            <p>Jeigu kažkurioje iš užduočių užstrigsi - nieko baisaus! Vietą gali pasižiūrėti ir žemėlapyje</p>
-            <p>Tačiau tuo nepiktnaudžiauk - nuo to nukentės galutinis tavo rezultatas :(</p>
+            <div class="intro-text">
+                <p>Labas! Džiaugiamės, kad pasiryžai priimti šį nuotykį.</p>
+                <p>Taisyklės labai paprastos: vadovaudamasis užuominomis, turėsi surasti 7 paslėptas vietas ir jose nuskaityti QR kodus.</p>
+                <p>Jei kartais užstrigsi – nieko baisaus, lokaciją visada galėsi pasitikrinti žemėlapyje. Tačiau patariame juo nepiktnaudžiauti, nes tai atsilieps tavo galutiniam rezultatui! 😉</p>
+            </div>
             <form method="post">
                 <input type="text" name="player_name" placeholder="Tavo vardas" required autocomplete="off">
                 <button type="submit" name="set_name">Pradėti 🚀</button>
