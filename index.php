@@ -40,7 +40,7 @@ if (!isset($_SESSION['player_name']) || empty($_SESSION['player_name'])) {
         </style>
     </head>
     <body>
-        <div class="brand-header">7 istorijos. Žvėrynas</div>
+        <div class="brand-header">7 istorijos.<br> Žvėrynas</div>
         <div class="card">
             <h1>Miesto Iššūkis</h1>
             <p>Sistemos inicializacija. Prašome identifikuoti save.</p>
