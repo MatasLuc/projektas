@@ -25,6 +25,12 @@ foreach ($all_progress as $row) {
 }
 
 $contents = $pdo->query("SELECT * FROM hunt_content ORDER BY stage ASC")->fetchAll();
+
+// Susikuriame žemėlapių nuorodų masyvą, kad galėtume priskirti žaidėjui
+$stage_maps = [];
+foreach ($contents as $c) {
+    $stage_maps[$c['stage']] = $c['maps_url'];
+}
 ?>
 <!DOCTYPE html>
 <html lang="lt">
@@ -53,10 +59,15 @@ $contents = $pdo->query("SELECT * FROM hunt_content ORDER BY stage ASC")->fetchA
         
         /* Radaras - Grupuotas */
         .player-group { background: rgba(0,0,0,0.2); border-radius: var(--radius-sm); padding: 15px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.05);}
-        .player-name { font-size: 1rem; color: var(--accent); margin: 0 0 12px 0; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;}
+        .player-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .player-name { font-size: 1rem; color: var(--accent); margin: 0; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;}
         .item { padding: 14px; margin-bottom: 8px; border-radius: var(--radius-sm); background: var(--bg-item); display: flex; justify-content: space-between; align-items: center; font-weight: 500; font-size: 0.9rem;}
         .done { border-left: 4px solid var(--success); background: rgba(16, 185, 129, 0.1); color: #fff; }
         
+        /* Naujas mygtukas žemėlapiui */
+        .btn-map { background: rgba(59, 130, 246, 0.1); color: var(--accent); padding: 6px 12px; border-radius: 20px; text-decoration: none; font-size: 0.8rem; font-weight: bold; border: 1px solid rgba(59, 130, 246, 0.3); transition: 0.2s; }
+        .btn-map:hover { background: var(--accent); color: #fff; }
+
         /* Redaktorius */
         details { background: var(--bg-item); margin-bottom: 12px; border-radius: var(--radius-sm); overflow: hidden; border: 1px solid rgba(255,255,255,0.05); transition: all 0.2s; }
         summary { padding: 16px; cursor: pointer; font-weight: 600; list-style: none; display: flex; align-items: center; }
@@ -117,9 +128,18 @@ $contents = $pdo->query("SELECT * FROM hunt_content ORDER BY stage ASC")->fetchA
                 <?php if (empty($players)): ?>
                     <p style="color:var(--text-muted); text-align:center;">Dar nėra jokių žaidėjų.</p>
                 <?php else: ?>
-                    <?php foreach ($players as $name => $stages): ?>
+                    <?php foreach ($players as $name => $stages): 
+                        // Apskaičiuojame, kur žaidėjas yra dabar (didžiausias lankytos stotelės skaičius)
+                        $latest_stage = max(array_keys($stages));
+                        $latest_map_url = isset($stage_maps[$latest_stage]) ? $stage_maps[$latest_stage] : '';
+                    ?>
                         <div class="player-group">
-                            <h3 class="player-name">👤 <?php echo htmlspecialchars($name); ?></h3>
+                            <div class="player-header">
+                                <h3 class="player-name">👤 <?php echo htmlspecialchars($name); ?></h3>
+                                <?php if (!empty($latest_map_url)): ?>
+                                    <a href="<?php echo htmlspecialchars($latest_map_url); ?>" target="_blank" class="btn-map">🗺️ Stotelė #<?php echo $latest_stage; ?></a>
+                                <?php endif; ?>
+                            </div>
                             <?php for ($i = 1; $i <= 7; $i++): ?>
                                 <div class="item <?php echo isset($stages[$i]) ? 'done' : ''; ?>">
                                     <span>Stotelė <?php echo $i; ?></span>
