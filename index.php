@@ -27,9 +27,23 @@ if (!isset($_SESSION['player_name']) || empty($_SESSION['player_name'])) {
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
         <style>
             :root { --bg: #121212; --surface: #1e1e1e; --accent: #10b981; --text: #e0e0e0; }
-            body { margin: 0; padding: 20px; min-height: 100vh; display: flex; align-items: center; justify-content: center; background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; box-sizing: border-box; -webkit-font-smoothing: antialiased;}
-            .brand-header { position: absolute; top: 40px; left: 0; width: 100%; text-align: center; font-size: 1.4rem; color: var(--text); font-weight: 700; letter-spacing: 2px; text-transform: uppercase; animation: fadeInUp 0.8s ease forwards; }
-            .card { background: var(--surface); border: 1px solid rgba(255, 255, 255, 0.05); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); padding: 40px 30px; border-radius: 16px; text-align: center; width: 100%; max-width: 350px; animation: fadeInUp 0.8s ease forwards; box-sizing: border-box; margin-top: 40px;}
+            body { 
+                margin: 0; padding: 20px; min-height: 100vh; 
+                display: flex; flex-direction: column; align-items: center; justify-content: center; 
+                background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; 
+                box-sizing: border-box; -webkit-font-smoothing: antialiased;
+            }
+            .brand-header { 
+                width: 100%; text-align: center; font-size: 1.4rem; color: var(--text); 
+                font-weight: 700; letter-spacing: 2px; text-transform: uppercase; 
+                animation: fadeInUp 0.8s ease forwards; margin-bottom: 30px; 
+            }
+            .card { 
+                background: var(--surface); border: 1px solid rgba(255, 255, 255, 0.05); 
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); padding: 40px 30px; 
+                border-radius: 16px; text-align: center; width: 100%; max-width: 350px; 
+                animation: fadeInUp 0.8s ease forwards; box-sizing: border-box; margin-top: 0;
+            }
             @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
             h1 { color: var(--accent); font-size: 1.6rem; margin-bottom: 20px; }
             .intro-text { color: #a0a0a0; font-size: 1rem; line-height: 1.6; margin-bottom: 30px; }
@@ -105,7 +119,7 @@ $is_iframe = (strpos($maps_code, '<iframe') !== false);
         }
 
         body { 
-            margin: 0; padding: 0 20px 100px 20px; 
+            margin: 0; padding: 20px 20px 100px 20px; 
             min-height: 100vh; 
             display: flex; flex-direction: column; align-items: center; justify-content: center; 
             box-sizing: border-box; -webkit-font-smoothing: antialiased;
@@ -113,7 +127,7 @@ $is_iframe = (strpos($maps_code, '<iframe') !== false);
         }
         
         .top-bar {
-            position: absolute; top: 0; left: 0; width: 100%; padding: 25px 20px 20px 20px;
+            position: relative; width: 100%; padding: 0 0 20px 0; margin-bottom: 20px;
             box-sizing: border-box; text-align: center;
         }
 
@@ -136,7 +150,7 @@ $is_iframe = (strpos($maps_code, '<iframe') !== false);
             background: var(--surface); border: 1px solid rgba(255, 255, 255, 0.05);
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3); 
             animation: fadeInUp 0.8s ease-out forwards; opacity: 0; transform: translateY(20px);
-            margin-top: 100px; 
+            margin-top: 0; 
         }
         @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
 
